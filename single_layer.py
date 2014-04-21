@@ -1,14 +1,26 @@
 import numpy as np
+import helper
+import matplotlib.pyplot as plt
+import math
 
 
-def run_epoches(images, labels, n=200, eta=0.1):
+def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
 	"""Run n number of epoches."""
 	mse_weights = np.random.rand(784, 10)
 	mse_bias = np.random.rand(10, 1)
 	entropy_weights = np.random.rand(784, 10)
 	entropy_bias = np.random.rand(10, 1)
+
+	# for plot
+	x_axis = []
+	training_mse = []
+	training_entropy = []
+	test_mse = []
+	test_entropy = []
+
 	for i in range(n):
-		batches = generate_batches(images, labels)
+		eta = alpha / math.pow(i + 1, 0.5)
+		batches = helper.generate_batches(images, labels)
 		for batch in batches:
 			gradient_mse_w = compute_gradient_mse(batch, mse_weights, mse_bias, 'w')
 			gradient_mse_b = compute_gradient_mse(batch, mse_weights, mse_bias, 'b')
@@ -22,22 +34,33 @@ def run_epoches(images, labels, n=200, eta=0.1):
 			entropy_bias = entropy_bias + eta * gradient_entropy_b
 
 		#storing info every 10 epochs
-		if i % 10 == 0:
+		if i % 1 == 0:
+			x_axis.append(i)
+			y1 = helper.error(mse_weights, mse_bias, images, labels)
+			training_mse.append(1 - y1)
+			y2 = helper.error(entropy_weights, entropy_bias, images, labels)
+			training_entropy.append(1 - y2)
+			y3 = helper.error(mse_weights, mse_bias, test_images, test_labels)
+			test_mse.append(1 - y3)
+			y4 = helper.error(entropy_weights, entropy_bias,
+					test_images, test_labels)
+			test_entropy.append(1 - y4)
+
 			print 'epoch=', i
+			print 'error rate on training set using mean squared error', y1
+			print 'error rate on training set using cross-entropy error', y2
+			print 'error rate on test set using mean squared error', y3
+			print 'error rate on test set using cross-entropy error', y4
 
+	# p1, = plt.plot(x_axis, training_mse, 'r')
+	# p2, = plt.plot(x_axis, training_entropy, 'b')
+	# p3, = plt.plot(x_axis, test_mse, 'g')
+	# p4, = plt.plot(x_axis, test_entropy, 'k')
+	# plt.legend([p1, p2, p3, p4],
+	# 	['training accuracy, mse', 'training accuracy, entropy',
+	#		'test accuracy, mse', 'test accuracy, entropy'])
+	# plt.show()
 	return (mse_weights, mse_bias, entropy_weights, entropy_bias)
-
-
-def generate_batches(images, labels):
-	"""Randomly shuffles data and divides into batches of 200."""
-	appended = np.append(images, labels, axis=1)
-	np.random.shuffle(appended)
-	batches = []
-	start_i = 0
-	for i in range(200, len(labels) + 1, 200):
-		batches.append(appended[start_i:i])
-		start_i = i
-	return batches
 
 
 def compute_gradient_mse(batch, weights, bias, b_or_w):
@@ -53,7 +76,7 @@ def compute_gradient_mse(batch, weights, bias, b_or_w):
 		x = dp.T[:784].reshape(784, 1)
 		t = np.zeros((10, 1))
 		t[int(dp.T[784:][0])] = 1
-		y = sigmoid(x, weights, bias)
+		y = helper.sigmoid(x, weights, bias)
 		if b_or_w == 'w':
 			v = np.dot(np.dot((y - t), (1 - y).T), y)
 			addition = np.zeros((784, 10))
@@ -80,7 +103,7 @@ def compute_gradient_entropy(batch, weights, bias, b_or_w):
 		x = dp.T[:784].reshape(784, 1)
 		t = np.zeros((10, 1))
 		t[int(dp.T[784:][0])] = 1
-		y = sigmoid(x, weights, bias)
+		y = helper.sigmoid(x, weights, bias)
 		if b_or_w == 'w':
 			v = y - t
 			addition = np.zeros((784, 10))
@@ -92,28 +115,3 @@ def compute_gradient_entropy(batch, weights, bias, b_or_w):
 		else: # b_or_w == 'b':
 			ret += y - t
 	return ret
-
-
-def sigmoid(x, w, b):
-	"""Sigmoid function."""
-	z = np.dot(w.T, x) + b
-	return 1 / (1 + np.exp(-z))
-
-
-def predict(images, weights, bias):
-	"""Predict labels for images using trained weights and bias values."""
-	prediction = []
-	for im in images:
-		y = sigmoid(im, weights, bias)
-		prediction.append(np.argmax(y))
-	return prediction
-
-
-def calculate_error(predicted, true):
-	"""Calculates error."""
-	incorrect = 0.0
-	index = 0
-	while index < len(predicted):
-		if predicted[index] != true[index]:
-			incorrect += 1
-	return incorrect / len(predicted)

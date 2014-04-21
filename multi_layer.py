@@ -1,5 +1,6 @@
 import numpy as np
-from single_layer import generate_batches, sigmoid
+import helper
+import matplotlib.pyplot as plt
 
 
 def run_epoches(images, labels, n=200, eta=0.1):
@@ -49,13 +50,8 @@ def backward(x, weights, bias):
 
 
 def step_forward(prev_x, weights, bias):
-	pass
+	return tanh(prev_x, weights, bias)
 
 
 def step_backward(next_s, weights, bias):
 	pass
-
-
-def tanh(x, w, b):
-	z = np.dot(w.T, x) + b
-	return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
