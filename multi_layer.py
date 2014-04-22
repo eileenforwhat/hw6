@@ -72,13 +72,15 @@ def forward(x_0, weights, bias):
     print x_3
     return [x_0, x_1, x_2, x_3]
 
+def backward(x_3, weights, bias):
+    pass
 
-def backward(x, weights, bias):
-    s_3 = final_layer(x[3])
-    s_2 = step_backward(s_3, x[2], weights[2], bias[2])
-    s_1 = step_backward(s_2, x[1], weights[1], bias[1])
-    s_0 = step_backward(s_1, x[0], weights[0], bias[0])
-    return [s_0, s_1, s_2, s_3]
+#def backward(x, weights, bias):
+#    s_3 = final_layer(x[3])
+#    s_2 = step_backward(s_3, x[2], weights[2], bias[2])
+#    s_1 = step_backward(s_2, x[1], weights[1], bias[1])
+#    s_0 = step_backward(s_1, x[0], weights[0], bias[0])
+#    return [s_0, s_1, s_2, s_3]
 
 
 def step_forward(prev_x, weights, bias):
