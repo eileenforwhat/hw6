@@ -11,7 +11,11 @@ def sigmoid(x, w, b):
 
 
 def tanh(x, w, b):
-    z = np.dot(w.T, x) + b
+    print x.shape
+    print w.shape
+    print b.shape
+    #z = np.dot(w, x) + b
+    z = np.dot(w,x)
     return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
 
 

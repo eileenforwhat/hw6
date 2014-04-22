@@ -3,6 +3,7 @@ import numpy as np
 from single_layer import run_epoches
 import time
 from sklearn import preprocessing
+import multi_layer as ml
 
 
 if __name__ == '__main__':
@@ -21,9 +22,11 @@ if __name__ == '__main__':
         np.reshape(np.transpose(test_images, [2, 0, 1]), (10000, 784))
     test_images = preprocessing.scale(test_images.astype(float))
 
-    start = time.clock()
+#    start = time.clock()
+#    mse_weights, mse_bias, entropy_weights, entropy_bias = \
+#        run_epoches(train_images, train_labels, test_images, test_labels, n=300)
+#    end = time.clock()
+#    elapsed = (end - start) / 3600
+#    print 'elapsed time (hours) for single layered network=', elapsed
     mse_weights, mse_bias, entropy_weights, entropy_bias = \
-        run_epoches(train_images, train_labels, test_images, test_labels, n=300)
-    end = time.clock()
-    elapsed = (end - start) / 3600
-    print 'elapsed time (hours) for single layered network=', elapsed
+        ml.run_epoches(train_images, train_labels)
