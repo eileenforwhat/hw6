@@ -49,6 +49,7 @@ def predict(images, weights, bias):
 
 def calculate_error(predicted, true):
     """Calculates error between predicted and true."""
+    assert len(predicted) == len(true)
     true = [x[0] for x in true] # convert to list
     incorrect = 0.0
     index = 0

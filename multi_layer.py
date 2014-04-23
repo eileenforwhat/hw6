@@ -31,11 +31,44 @@ def run_epoches(images, labels, n=200, alpha=0.6):
         for batch in batches:       
 
             # extract features out of the training set
-            feats = batch[:,0:784] # each row is a feature
+            feats = batch[:,:784] # each row is a feature
+            labels = batch[:,784:] # each row is a label
+
             x_mse = forward(feats, mse_weights, mse_bias)
             x_cee = forward(feats, cee_weights, cee_bias)
 
-    return (mse_weights, mse_bias, cee_weights, cee_bias)
+            backward(x_mse, labels, mse_weights, mse_bias)
+
+        #storing info every 10 epochs
+        if i % 10 == 0:
+
+            x_axis.append(i)
+            y1 = helper.error(mse_weights, mse_bias, images, labels)
+            training_mse.append(1 - y1)
+            
+            y2 = helper.error(cee_weights, cee_bias, images, labels)
+            training_entropy.append(1 - y2)
+           
+            y3 = helper.error(mse_weights, mse_bias, test_images, test_labels)
+            test_mse.append(1 - y3)
+            
+            y4 = helper.error(cee_weights, cee_bias, test_images, test_labels)
+            test_entropy.append(1 - y4)
+
+            print 'epoch=', i
+            print 'error rate on training set using mean squared error', y1
+            print 'error rate on training set using cross-entropy error', y2
+            print 'error rate on test set using mean squared error', y3
+            print 'error rate on test set using cross-entropy error', y4
+
+    p1, = plt.plot(x_axis, training_mse, 'r')
+    p2, = plt.plot(x_axis, training_entropy, 'b')
+    p3, = plt.plot(x_axis, test_mse, 'g')
+    p4, = plt.plot(x_axis, test_entropy, 'k')
+    plt.legend([p1, p2, p3, p4],
+        ['training accuracy, mse', 'training accuracy, entropy',
+            'test accuracy, mse', 'test accuracy, entropy'])
+    plt.show()
 
 
 def forward(x_0, weights, bias):
@@ -62,5 +95,15 @@ def forward(x_0, weights, bias):
     x_3 = sigmoid(s_3)
     return [x_0, x_1, x_2, x_3]
 
-def backward(x_3, weights, bias):
-    
+def backward(x, labels, weights, bias):
+    x_0, x_1, x_2, x_3 = x
+    t = np.zeros((200, 10))
+    for row in range(len(t[:,0])):
+        r = np.zeros((1, 10))
+        r[:,int(labels[row])] = 1
+        t[row,:] = r
+    d_3 = np.multiply(np.multiply(x_3 - t, 1 - x_3), x_3)
+    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2))
+    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
+    d_0 = np.multiply(np.dot(d_1, weights[0].T), 1 - np.multiply(x_0, x_0))
+    return [d_0, d_1, d_2, d_3]

@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, test_images, test_labels, n=200, alpha=.6):
+def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.7):
     """Run n number of epoches."""
-    mse_weights = np.random.randn(784, 10) / 10
-    mse_bias = np.random.randn(10, 1) / 10
+    mse_weights = np.random.randn(784, 10) / 100
+    mse_bias = np.random.randn(10, 1) / 100
     
-    entropy_weights = np.random.rand(784, 10) / 10
-    entropy_bias = np.random.rand(10, 1) / 10
+    entropy_weights = np.random.randn(784, 10) / 100
+    entropy_bias = np.random.randn(10, 1) / 100
 
     # for plot
     x_axis = []

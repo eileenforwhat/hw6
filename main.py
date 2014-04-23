@@ -17,14 +17,6 @@ if __name__ == '__main__':
     train_images = \
         np.reshape(np.transpose(train_images, [2, 0, 1]), (60000, 784))
 
-    # preprocessing
-    # for row in range(train_images.shape[0]):
-    #     std = np.std(train_images[row,:])
-    #     mean = np.mean(train_images[row,:])
-    #     train_images[row,:] = (train_images[row,:] - mean) / std
-    #     print np.mean(train_images[row,:])
-    #     print np.std(train_images[row,:])
-
     train_images = preprocessing.scale(train_images.astype(float), axis=1)
 
     test = scipy.io.loadmat('data/test.mat')
@@ -32,12 +24,6 @@ if __name__ == '__main__':
     test_labels = test['test']['labels'][0][0]
     test_images = \
         np.reshape(np.transpose(test_images, [2, 0, 1]), (10000, 784))
-    
-    # preprocessing
-    # for row in range(test_images.shape[0]):
-    #     std = np.std(test_images[row,:])
-    #     mean = np.mean(test_images[row,:])
-    #     test_images[row,:] = (test_images[row,:] - mean) / std
 
     test_images = preprocessing.scale(test_images.astype(float), axis=1)
 
@@ -46,11 +32,5 @@ if __name__ == '__main__':
 #    end = time.clock()
 #    elapsed = (end - start) / 3600
 #    print 'elapsed time (hours) for single layered network=', elapsed
-#    start = time.clock()
-#    mse_weights, mse_bias, entropy_weights, entropy_bias = \
-#        run_epoches(train_images, train_labels, test_images, test_labels, n=300)
-#    end = time.clock()
-#    elapsed = (end - start) / 3600
-#    print 'elapsed time (hours) for single layered network=', elapsed
-    mse_weights, mse_bias, entropy_weights, entropy_bias = \
-        ml.run_epoches(train_images, train_labels)
+
+    ml.run_epoches(train_images, train_labels)
