@@ -22,6 +22,8 @@ def tanh(x, w, b):
 
 def generate_batches(images, labels):
     """Randomly shuffles data and divides into batches of 200."""
+    print images.shape
+    print labels.shape
     appended = np.append(images, labels, axis=1)
     np.random.shuffle(appended)
     batches = []

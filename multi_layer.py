@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
+def run_epoches(train_images, train_labels, test_images, test_labels, n=200, alpha=0.6):
     """
     Run n number of epoches.
-    images : training images
-    lables : training labels
+    train_images : training images
+    train_lables : training labels
     test_images : test images
     test_labels : test labels
     n : number of epoches
@@ -33,7 +33,8 @@ def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
     cee_bias = [np.random.randn(300, 1) * scale_factor , \
             np.random.randn(100, 1) *scale_factor, \
             np.random.randn(10, 1) *scale_factor]
-
+    
+    # list of accuracies for different loss function
     training_mse = []
     training_cee = []
     test_mse = []
@@ -42,7 +43,7 @@ def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
 
     for i in range(n):
         eta = alpha / math.pow(i + 1, 0.5)
-        batches = helper.generate_batches(images, labels)
+        batches = helper.generate_batches(train_images, train_labels)
         for batch in batches:       
 
             # extract features out of the training set
@@ -65,8 +66,8 @@ def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
         if i % 10 == 0:
             x_axis.append(i)
 
-            res1 = calculate_accuracy(predict(images, mse_weights, mse_bias), labels)
-            res2 = calculate_accuracy(predict(images, cee_weights, cee_bias), labels)
+            res1 = calculate_accuracy(predict(train_images, mse_weights, mse_bias), train_labels)
+            res2 = calculate_accuracy(predict(train_images, cee_weights, cee_bias), train_labels)
             res3 = calculate_accuracy(predict(test_images, mse_weights, mse_bias), test_labels)
             res4 = calculate_accuracy(predict(test_images, cee_weights, cee_bias), test_labels)
 
@@ -149,16 +150,20 @@ def update_w(x, weights, deltas, eta):
 
 def update_b(x, biases, deltas, eta):
     for i in range(3):
-        biases[i] = biases[i] - eta * np.sum(deltas[i], axis=1)
+        # sum the deltas
+        delta_sum = np.sum(deltas[i], axis=0)
+        # reshaping so that it matches the shape of biases
+        delta_sum = delta_sum.reshape(delta_sum.shape[0], 1)
+        biases[i] = biases[i] - eta * delta_sum
     return biases
 
 def predict(features, weights, biases):
-    mse_pred = forward(images, weights, bias) # propagate
+    mse_pred = forward(features, weights, biases) # propagate
     mse_pred = np.argmax(mse_pred[3],axis=1) # classify
     return mse_pred.reshape(mse_pred.shape[0], 1)
 
-def calculate_accuray(pred, true_label):
-    return 1.0 * np.sum(mse_pred==labels) / labels.shape[0]
+def calculate_accuracy(pred, true_label):
+    return 1.0 * np.sum(pred==true_label) / true_label.shape[0]
 
 def calculate_error(pred, true_label):
-    return 1.0 * np.sum(mse_pred!=labels) / labels.shape[0]
+    return 1.0 * np.sum(pred!=true_label) / true_label.shape[0]
