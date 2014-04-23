@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.01):
+def run_epoches(images, labels, test_images, test_labels, n=200, alpha=.6):
     """Run n number of epoches."""
-    mse_weights = np.random.rand(784, 10) - 0.5
-    mse_bias = np.random.rand(10, 1)
-    entropy_weights = np.random.rand(784, 10) - 0.5
-    entropy_bias = np.random.rand(10, 1)
+    mse_weights = np.random.randn(784, 10) / 10
+    mse_bias = np.random.randn(10, 1) / 10
+    
+    entropy_weights = np.random.rand(784, 10) / 10
+    entropy_bias = np.random.rand(10, 1) / 10
 
     # for plot
     x_axis = []
@@ -24,24 +25,31 @@ def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.01):
         for batch in batches:
             gradient_mse_w = compute_gradient_mse(batch, mse_weights, mse_bias, 'w')
             gradient_mse_b = compute_gradient_mse(batch, mse_weights, mse_bias, 'b')
+            
             gradient_entropy_w = \
                 compute_gradient_entropy(batch, entropy_weights, entropy_bias, 'w')
             gradient_entropy_b = \
                 compute_gradient_entropy(batch, entropy_weights, entropy_bias, 'b')
-            mse_weights = mse_weights + eta * gradient_mse_w
-            mse_bias = mse_bias + eta * gradient_mse_b
-            entropy_weights = entropy_weights + eta * gradient_entropy_w
-            entropy_bias = entropy_bias + eta * gradient_entropy_b
+
+            mse_weights = mse_weights - eta * gradient_mse_w
+            mse_bias = mse_bias - eta * gradient_mse_b
+            
+            entropy_weights = entropy_weights - eta * gradient_entropy_w
+            entropy_bias = entropy_bias - eta * gradient_entropy_b
 
         #storing info every 10 epochs
         if i % 10 == 0:
+
             x_axis.append(i)
             y1 = helper.error(mse_weights, mse_bias, images, labels)
             training_mse.append(1 - y1)
+            
             y2 = helper.error(entropy_weights, entropy_bias, images, labels)
             training_entropy.append(1 - y2)
+           
             y3 = helper.error(mse_weights, mse_bias, test_images, test_labels)
             test_mse.append(1 - y3)
+            
             y4 = helper.error(entropy_weights, entropy_bias,
                     test_images, test_labels)
             test_entropy.append(1 - y4)
@@ -60,7 +68,6 @@ def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.01):
         ['training accuracy, mse', 'training accuracy, entropy',
             'test accuracy, mse', 'test accuracy, entropy'])
     plt.show()
-    return (mse_weights, mse_bias, entropy_weights, entropy_bias)
 
 
 def compute_gradient_mse(batch, weights, bias, b_or_w):
@@ -74,7 +81,7 @@ def compute_gradient_mse(batch, weights, bias, b_or_w):
         ret = np.zeros((10, 1))
 
     for dp in batch:
-        x = dp.T[:784].reshape(784, 1)
+        x = dp.T[:784].reshape(784, 1).astype(float)
         t = np.zeros((10, 1))
         t[int(dp.T[784:][0])] = 1
         y = helper.sigmoid(x, weights, bias)
@@ -82,12 +89,6 @@ def compute_gradient_mse(batch, weights, bias, b_or_w):
             v = np.diagonal(np.dot(np.diagonal(np.dot((y - t), (1 - y).T)).\
                 reshape(10, 1), y.T)).reshape(10, 1)
             ret += np.dot(x, v.T)
-            # addition = np.zeros((784, 10))
-            # col = 0
-            # for v_k in v:
-            #   addition[:,col] = (v_k[0] * x).reshape(784)
-            #   col += 1
-            # ret += addition
         else: # b_or_w == 'b':
             ret += np.diagonal(np.dot(np.diagonal(np.dot((y - t), (1 - y).T)).\
                 reshape(10, 1), y.T)).reshape(10, 1)
@@ -110,12 +111,7 @@ def compute_gradient_entropy(batch, weights, bias, b_or_w):
         y = helper.sigmoid(x, weights, bias)
         if b_or_w == 'w':
             v = y - t
-            addition = np.zeros((784, 10))
-            col = 0
-            for v_k in v:
-                addition[:,col] = (v_k[0] * x).reshape(784)
-                col += 1
-            ret += addition
+            ret += np.dot(x, v.T)
         else: # b_or_w == 'b':
             ret += y - t
     return ret

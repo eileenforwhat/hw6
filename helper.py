@@ -5,8 +5,8 @@ def sigmoid(x, w, b):
     """Sigmoid function."""
     z = np.dot(w.T, x) + b
     ret = 1.0 / (1 + np.exp(-z))
-    ret[ret == 1] = .999
-    ret[ret == 0] = .001
+    ret[ret == 1] = .99
+    ret[ret == 0] = .01
     return ret
 
 
@@ -38,7 +38,7 @@ def predict(images, weights, bias):
     """Predict labels for images using weights and bias values."""
     prediction = []
     for im in images:
-        y = sigmoid(im, weights, bias)
+        y = sigmoid(im.reshape(784, 1), weights, bias)
         prediction.append(np.argmax(y))
     return prediction
 
