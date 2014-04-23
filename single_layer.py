@@ -75,6 +75,7 @@ def compute_gradient_mse(batch, weights, bias, b_or_w):
     Computes the mean squared error gradient by summing over gradients
     of all data points in batch.
     """
+    assert b_or_w == 'w' or b_or_w == 'b'
     if b_or_w == 'w':
         ret = np.zeros((784, 10))
     else:
@@ -100,6 +101,7 @@ def compute_gradient_entropy(batch, weights, bias, b_or_w):
     Computes the cross-entropy error gradient by summing over gradients
     of all data points in batch.
     """
+    assert b_or_w == 'w' or b_or_w == 'b'
     if b_or_w == 'w':
         ret = np.zeros((784, 10))
     else:
