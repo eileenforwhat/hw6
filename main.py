@@ -2,11 +2,8 @@ import scipy.io
 import numpy as np
 from single_layer import run_epoches
 from sklearn import preprocessing
-<<<<<<< HEAD
 import time
-=======
 import multi_layer as ml
->>>>>>> db724771709fc2101451871e59029daf28447d36
 
 
 if __name__ == '__main__':
@@ -44,13 +41,11 @@ if __name__ == '__main__':
 
     test_images = preprocessing.scale(test_images.astype(float), axis=1)
 
-<<<<<<< HEAD
-    start = time.clock()
-    run_epoches(train_images, train_labels, test_images, test_labels)
-    end = time.clock()
-    elapsed = (end - start) / 3600
-    print 'elapsed time (hours) for single layered network=', elapsed
-=======
+#    start = time.clock()
+#    run_epoches(train_images, train_labels, test_images, test_labels)
+#    end = time.clock()
+#    elapsed = (end - start) / 3600
+#    print 'elapsed time (hours) for single layered network=', elapsed
 #    start = time.clock()
 #    mse_weights, mse_bias, entropy_weights, entropy_bias = \
 #        run_epoches(train_images, train_labels, test_images, test_labels, n=300)
@@ -59,4 +54,3 @@ if __name__ == '__main__':
 #    print 'elapsed time (hours) for single layered network=', elapsed
     mse_weights, mse_bias, entropy_weights, entropy_bias = \
         ml.run_epoches(train_images, train_labels)
->>>>>>> db724771709fc2101451871e59029daf28447d36
