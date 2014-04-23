@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, n=200, alpha=0.6):
+def run_epoches(images, labels, n=200, alpha=0.):
     """Run n number of epoches."""
 
     # initialize weights and bias values to random
@@ -22,13 +22,20 @@ def run_epoches(images, labels, n=200, alpha=0.6):
             np.random.randn(300, 100) * scale_factor, \
             np.random.randn(100, 10) * scale_factor]
     cee_bias = [np.random.randn(300, 1) * scale_factor , \
-            np.random.randn(100, 1) *scale_factor, \
-            np.random.randn(10, 1) *scale_factor]
+            np.random.randn(100, 1) * scale_factor, \
+            np.random.randn(10, 1) * scale_factor]
+
+    # for plot
+    x_axis = []
+    training_mse = []
+    training_entropy = []
+    test_mse = []
+    test_entropy = []
 
     for i in range(n):
         eta = alpha / math.pow(i + 1, 0.5)
         batches = helper.generate_batches(images, labels)
-        for batch in batches:       
+        for batch in batches:  
 
             # extract features out of the training set
             feats = batch[:,:784] # each row is a feature
@@ -101,6 +108,7 @@ def forward(x_0, weights, bias):
     s_3 = np.dot(x_2, weights[2]) + bias[2].T # 200-by-10 matrix
     x_3 = sigmoid(s_3)
     return [x_0, x_1, x_2, x_3]
+
 
 def backward_mse(x, labels, weights, bias):
     x_0, x_1, x_2, x_3 = x

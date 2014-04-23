@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.01):
+def run_epoches(images, labels, test_images, test_labels, n=100, alpha=0.7):
     """Run n number of epoches."""
     mse_weights = np.random.randn(784, 10) / 100
     mse_bias = np.random.randn(10, 1) / 100
