@@ -41,6 +41,11 @@ def run_epoches(images, labels, n=200, alpha=0.6):
             d_mse = backward_mse(x_mse, labels, mse_weights, mse_bias)
             d_cee = backward_cee(x_cee, labels, cee_weights, cee_bias)
 
+            mse_weights = update_w(x_mse, mse_weights, d_mse, eta)
+            cee_weights = update_w(x_cee, cee_weights, d_cee, eta)
+            mse_bias = update_b(x_mse, mse_bias, d_mse, eta)
+            cee_bias = update_b(x_cee, cee_bias, d_cee, eta)
+
         #storing info every 10 epochs
         if i % 10 == 0:
 
@@ -123,7 +128,13 @@ def backward_cee(x, labels, weights, bias):
     return [d_1, d_2, d_3]
 
 
-def update(x, weights, deltas, eta):
+def update_w(x, weights, deltas, eta):
     for i in range(3):
         weights[i] = weights[i] - eta * np.dot(x[i].T, deltas[i+1])
+    return weights
+
+
+def update_b(x, weights, deltas, eta):
+    for i in range(3):
+        weights[i] = weights[i] - eta * deltas[i+1]
     return weights
