@@ -80,7 +80,6 @@ def compute_gradient_mse(batch, weights, bias, b_or_w):
         ret = np.zeros((784, 10))
     else:
         ret = np.zeros((10, 1))
-
     for dp in batch:
         x = dp.T[:784].reshape(784, 1).astype(float)
         t = np.zeros((10, 1))
