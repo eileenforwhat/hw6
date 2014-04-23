@@ -52,25 +52,49 @@ def run_epoches(images, labels, n=200, eta=0.1):
  then calculate the last layer x_3 with sigmoid function
 """
 def forward(x_0, weights, bias):
-    def tanh(x,w,b):
-        x = x.reshape(x.shape[0],1)
-        s = np.dot(w.T,x) + b
-        s[s < 10e-7] = 0 # for numerical issue
-        tanh_numer = np.exp(s) - np.exp(-s)
-        tanh_denom = np.exp(s) + np.exp(-s)
-        # # # Replace NaN to zero. 
-        # # # Not sure if I am allowed to?
-        return np.nan_to_num(tanh_numer / tanh_denom)
-    x_1 = np.zeros((300, 1))
-    for feat in x_0:
-        x_1 += tanh(feat, weights[0], bias[0])
-    x_2 = tanh(x_1, weights[1], bias[1])
-    x_3 = helper.sigmoid(x_2, weights[2], bias[2]) # last layer
+    # sigmoid function
+    def sigmoid(s):
+        return 1.0 / (1 + np.exp(-s))
+    # sigmoid function to accept numpy array
+    sigmoid = np.vectorize(sigmoid, otypes=[np.float])
+
+    s_1 = np.dot(x_0, weights[0]) + bias[0].T # 200-by-300 matrix
+    x_1 = np.tanh(s_1)
+
+    s_2 = np.dot(x_1, weights[1]) + bias[1].T # 200-by-100 matrix
+    x_2 = np.tanh(s_2)
+
+    s_3 = np.dot(x_2, weights[2]) + bias[2].T # 200-by-10 matrix
+    x_3 = sigmoid(s_3)
+    return [x_0, x_1, x_2, x_3]
+    
+    #x_1 = np.tanh(np.dot(x_0, weights[0]))
+    #print x_1
+    #x_2 = np.tanh(np.dot(x_1, weights[1]))
+    #print x_2
+    #x_3 = np.tanh(np.dot(x_2, weights[2]))
+    #x_1 = np.tanh(np.dot(weights[0].T, x_0.T).T)
+    #x_2 = np.tanh(np.dot(weights[1].T, x_1.T).T)
+    #x_3 = np.tanh(np.dot(weights[2].T, x_2.T).T)
+    #def tanh(x,w,b):
+    #    x = x.reshape(x.shape[0],1)
+    #    #x = np.matrix(x).T
+    #    s = np.dot(w.T,x) + b
+    #    s[s < 10e-7] = 0 # for numerical issue
+    #    tanh_numer = np.exp(s) - np.exp(-s)
+    #    tanh_denom = np.exp(s) + np.exp(-s)
+    #    # # # Replace NaN to zero. 
+    #    # # # Not sure if I am allowed to?
+    #    return np.nan_to_num(tanh_numer / tanh_denom)
+    #x_1 = np.zeros((300, 1))
+    #for feat in x_0:
+    #    x_1 += tanh(feat, weights[0], bias[0])
+    #x_1 = tanh(feat, weights[0], bias[0])
+    #x_2 = tanh(x_1, weights[1], bias[1])
+    #x_3 = helper.sigmoid(x_2, weights[2], bias[2]) # last layer
     #x_1 = step_forward(x_0, weights[0], bias[0])
     #x_2 = step_forward(x_1, weights[1], bias[1])
     #x_3 = step_forward(x_2, weights[2], bias[2])
-    print x_3
-    return [x_0, x_1, x_2, x_3]
 
 def backward(x_3, weights, bias):
     pass
