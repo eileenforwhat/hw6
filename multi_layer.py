@@ -4,8 +4,17 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(images, labels, n=200, alpha=0.6):
-    """Run n number of epoches."""
+def run_epoches(images, labels, test_images, test_labels, n=200, alpha=0.6):
+    """
+    Run n number of epoches.
+    images : training images
+    lables : training labels
+    test_images : test images
+    test_labels : test labels
+    n : number of epoches
+    alpha : initial learning rate 
+    """
+    
 
     # initialize weights and bias values to random
     scale_factor = 10e-2 # scaling factor for weight and bias
@@ -24,6 +33,12 @@ def run_epoches(images, labels, n=200, alpha=0.6):
     cee_bias = [np.random.randn(300, 1) * scale_factor , \
             np.random.randn(100, 1) *scale_factor, \
             np.random.randn(10, 1) *scale_factor]
+
+    training_mse = []
+    training_cee = []
+    test_mse = []
+    test_cee = []
+    x_axis = []
 
     for i in range(n):
         eta = alpha / math.pow(i + 1, 0.5)
@@ -48,30 +63,28 @@ def run_epoches(images, labels, n=200, alpha=0.6):
 
         #storing info every 10 epochs
         if i % 10 == 0:
-
             x_axis.append(i)
-            y1 = helper.error(mse_weights, mse_bias, images, labels)
-            training_mse.append(1 - y1)
-            
-            y2 = helper.error(cee_weights, cee_bias, images, labels)
-            training_entropy.append(1 - y2)
-           
-            y3 = helper.error(mse_weights, mse_bias, test_images, test_labels)
-            test_mse.append(1 - y3)
-            
-            y4 = helper.error(cee_weights, cee_bias, test_images, test_labels)
-            test_entropy.append(1 - y4)
+
+            res1 = calculate_accuracy(predict(images, mse_weights, mse_bias), labels)
+            res2 = calculate_accuracy(predict(images, cee_weights, cee_bias), labels)
+            res3 = calculate_accuracy(predict(test_images, mse_weights, mse_bias), test_labels)
+            res4 = calculate_accuracy(predict(test_images, cee_weights, cee_bias), test_labels)
+
+            training_mse.append(res1)
+            training_cee.append(res2)
+            test_mse.append(res3)
+            test_cee.append(res4)
 
             print 'epoch=', i
-            print 'error rate on training set using mean squared error', y1
-            print 'error rate on training set using cross-entropy error', y2
-            print 'error rate on test set using mean squared error', y3
-            print 'error rate on test set using cross-entropy error', y4
+            print 'error rate on training set using mean squared error', 1 - res1
+            print 'error rate on training set using cross-entropy error', 1- res2
+            print 'error rate on test set using mean squared error', 1-res3
+            print 'error rate on test set using cross-entropy error', 1-res4
 
     p1, = plt.plot(x_axis, training_mse, 'r')
-    p2, = plt.plot(x_axis, training_entropy, 'b')
+    p2, = plt.plot(x_axis, training_cee, 'b')
     p3, = plt.plot(x_axis, test_mse, 'g')
-    p4, = plt.plot(x_axis, test_entropy, 'k')
+    p4, = plt.plot(x_axis, test_cee, 'k')
     plt.legend([p1, p2, p3, p4],
         ['training accuracy, mse', 'training accuracy, entropy',
             'test accuracy, mse', 'test accuracy, entropy'])
@@ -138,3 +151,14 @@ def update_b(x, biases, deltas, eta):
     for i in range(3):
         biases[i] = biases[i] - eta * np.sum(deltas[i], axis=1)
     return biases
+
+def predict(features, weights, biases):
+    mse_pred = forward(images, weights, bias) # propagate
+    mse_pred = np.argmax(mse_pred[3],axis=1) # classify
+    return mse_pred.reshape(mse_pred.shape[0], 1)
+
+def calculate_accuray(pred, true_label):
+    return 1.0 * np.sum(mse_pred==labels) / labels.shape[0]
+
+def calculate_error(pred, true_label):
+    return 1.0 * np.sum(mse_pred!=labels) / labels.shape[0]
