@@ -63,10 +63,4 @@ def forward(x_0, weights, bias):
     return [x_0, x_1, x_2, x_3]
 
 def backward(x_3, weights, bias):
-    pass
-
-def step_forward(prev_x, weights, bias):
-    return helper.tanh(prev_x, weights, bias)
-
-def step_backward(next_s, weights, bias):
-    pass
+    
