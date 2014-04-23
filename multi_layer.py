@@ -130,11 +130,11 @@ def backward_cee(x, labels, weights, bias):
 
 def update_w(x, weights, deltas, eta):
     for i in range(3):
-        weights[i] = weights[i] - eta * np.dot(x[i].T, deltas[i+1])
+        weights[i] = weights[i] - eta * np.dot(x[i].T, deltas[i])
     return weights
 
 
-def update_b(x, weights, deltas, eta):
+def update_b(x, biases, deltas, eta):
     for i in range(3):
-        weights[i] = weights[i] - eta * deltas[i+1]
-    return weights
+        biases[i] = biases[i] - eta * np.sum(deltas[i], axis=1)
+    return biases
