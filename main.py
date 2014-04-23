@@ -33,4 +33,4 @@ if __name__ == '__main__':
     elapsed = (end - start) / 3600
     print 'elapsed time (hours) for single layered network=', elapsed
 
-    ml.run_epoches(train_images, train_labels)
+    ml.run_epoches(train_images, train_labels, test_images, test_labels)
