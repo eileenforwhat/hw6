@@ -37,7 +37,9 @@ def run_epoches(images, labels, n=200, alpha=0.6):
             x_mse = forward(feats, mse_weights, mse_bias)
             x_cee = forward(feats, cee_weights, cee_bias)
 
-            backward(x_mse, labels, mse_weights, mse_bias)
+            # [d_1, d_2, d_3]
+            d_mse = backward_mse(x_mse, labels, mse_weights, mse_bias)
+            d_cee = backward_cee(x_cee, labels, cee_weights, cee_bias)
 
         #storing info every 10 epochs
         if i % 10 == 0:
@@ -95,7 +97,7 @@ def forward(x_0, weights, bias):
     x_3 = sigmoid(s_3)
     return [x_0, x_1, x_2, x_3]
 
-def backward(x, labels, weights, bias):
+def backward_mse(x, labels, weights, bias):
     x_0, x_1, x_2, x_3 = x
     t = np.zeros((200, 10))
     for row in range(len(t[:,0])):
@@ -105,8 +107,20 @@ def backward(x, labels, weights, bias):
     d_3 = np.multiply(np.multiply(x_3 - t, 1 - x_3), x_3)
     d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2))
     d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
-    d_0 = np.multiply(np.dot(d_1, weights[0].T), 1 - np.multiply(x_0, x_0))
-    return [d_0, d_1, d_2, d_3]
+    return [d_1, d_2, d_3]
+
+
+def backward_cee(x, labels, weights, bias):
+    x_0, x_1, x_2, x_3 = x
+    t = np.zeros((200, 10))
+    for row in range(len(t[:,0])):
+        r = np.zeros((1, 10))
+        r[:,int(labels[row])] = 1
+        t[row,:] = r
+    d_3 = x_3 - t
+    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2))
+    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
+    return [d_1, d_2, d_3]
 
 
 def update(x, weights, deltas, eta):

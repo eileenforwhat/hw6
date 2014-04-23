@@ -4,6 +4,7 @@ import numpy as np
 def sigmoid(x, w, b):
     """Sigmoid function."""
     z = np.dot(w.T, x) + b
+    
     ret = 1.0 / (1 + np.exp(-z))
     ret[ret == 1] = .99
     ret[ret == 0] = .01
