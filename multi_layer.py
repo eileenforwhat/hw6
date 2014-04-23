@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(train_images, train_labels, test_images, test_labels, n=200, alpha=0.6):
+def run_epoches(train_images, train_labels, test_images, test_labels, n=300, alpha=0.6):
     """
     Run n number of epoches.
     train_images : training images
