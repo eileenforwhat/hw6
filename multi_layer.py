@@ -107,3 +107,9 @@ def backward(x, labels, weights, bias):
     d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
     d_0 = np.multiply(np.dot(d_1, weights[0].T), 1 - np.multiply(x_0, x_0))
     return [d_0, d_1, d_2, d_3]
+
+
+def update(x, weights, deltas, eta):
+    for i in range(3):
+        weights[i] = weights[i] - eta * np.dot(x[i].T, deltas[i+1])
+    return weights
