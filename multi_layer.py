@@ -8,7 +8,7 @@ def run_epoches(images, labels, n=200, alpha=0.6):
     """Run n number of epoches."""
 
     # initialize weights and bias values to random
-    scale_factor = 10e-2 # scaling factor for weight and bias
+    scale_factor = 10e-3 # scaling factor for weight and bias
     # weights and bias for Mean Squared Error
     mse_weights = [np.random.randn(784, 300) * scale_factor, \
             np.random.randn(300, 100) * scale_factor, \
