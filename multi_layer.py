@@ -3,20 +3,25 @@ import helper
 import matplotlib.pyplot as plt
 
 
-def run_epoches(images, labels, n=200, eta=0.1):
+def run_epoches(images, labels, n=200, alpha=0.6):
     """Run n number of epoches."""
+
     # initialize weights and bias values to random
-    mse_weights = [np.random.rand(784, 300), np.random.rand(300, 100), \
-        np.random.rand(100, 10)]
-    mse_bias = [np.random.rand(300, 1), np.random.rand(100, 1), \
-        np.random.rand(10, 1)]
-    #entropy_weights = [np.random.rand(784, 300), np.random.rand(784, 100), \
-    #    np.random.rand(784, 10)]
-    entropy_weights = [np.random.rand(784, 300), np.random.rand(300, 100), \
-        np.random.rand(100, 10)]
-    entropy_bias = [np.random.rand(300, 1), np.random.rand(100, 1), \
-        np.random.rand(10, 1)]
+    mse_weights = [np.random.randn(784, 300) / 10, \
+        np.random.randn(300, 100) / 10, \
+        np.random.randn(100, 10) / 10]
+    mse_bias = [np.random.randn(300, 1) / 10, np.random.randn(100, 1) / 10, \
+        np.random.randn(10, 1) / 10]
+
+    cee_weights = [np.random.randn(784, 300) / 10, \
+        np.random.randn(300, 100) / 10, \
+        np.random.randn(100, 10) / 10]
+    cee_bias = [np.random.randn(300, 1) / 10, \
+        np.random.randn(100, 1) / 10, \
+        np.random.randn(10, 1) / 10]
+
     for i in range(n):
+        eta = alpha / math.pow(i + 1, 0.5)
         batches = helper.generate_batches(images, labels)
         for batch in batches:       
 
@@ -42,16 +47,17 @@ def run_epoches(images, labels, n=200, eta=0.1):
 #            mse_bias = update(x_mse_b, sigma_mse_b, eta)
 #            entropy_weights = update(x_entropy_w, sigma_entropy_w, eta)
 #            entropy_bias = update(x_entropy_b, sigma_entropy_b, eta)
-    return (mse_weights, mse_bias, entropy_weights, entropy_bias)
+    return (mse_weights, mse_bias, cee_weights, cee_bias)
 
-"""
- calculates the hidden layers x_1, x_2 with tanh function
- which is defined to be
- tanh(s) = (exp(s) - exp(-s)) / (exp(s) + exp(-s))
 
- then calculate the last layer x_3 with sigmoid function
-"""
 def forward(x_0, weights, bias):
+    """
+     calculates the hidden layers x_1, x_2 with tanh function
+     which is defined to be
+     tanh(s) = (exp(s) - exp(-s)) / (exp(s) + exp(-s))
+
+     then calculate the last layer x_3 with sigmoid function
+    """
     # sigmoid function
     def sigmoid(s):
         return 1.0 / (1 + np.exp(-s))
