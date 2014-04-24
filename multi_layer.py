@@ -130,7 +130,7 @@ def forward(x_0, weights, bias):
     x_2 = get_tanh(s_2)
 
     s_3 = np.dot(x_2, weights[2]) + bias[2].T # 200-by-10 matrix
-    x_3 = sigmoid(s_3)
+    x_3 = get_sigmoid(s_3)
     return [x_0, x_1, x_2, x_3]
 
 

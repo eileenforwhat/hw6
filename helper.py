@@ -10,20 +10,8 @@ def sigmoid(x, w, b):
     ret[ret == 0] = .01
     return ret
 
-
-def tanh(x, w, b):
-    print x.shape
-    print w.shape
-    print b.shape
-    #z = np.dot(w, x) + b
-    z = np.dot(w,x)
-    return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
-
-
 def generate_batches(images, labels):
     """Randomly shuffles data and divides into batches of 200."""
-    print images.shape
-    print labels.shape
     appended = np.append(images, labels, axis=1)
     np.random.shuffle(appended)
     batches = []
@@ -33,13 +21,11 @@ def generate_batches(images, labels):
         start_i = i
     return batches
 
-
 def error(weights, bias, images, labels):
     """Calculates the classification accuracy using weights and bias values."""
     predicted_labels = predict(images, weights, bias)
     error = calculate_error(predicted_labels, labels)
     return error
-
 
 def predict(images, weights, bias):
     """Predict labels for images using weights and bias values."""
@@ -48,7 +34,6 @@ def predict(images, weights, bias):
         y = sigmoid(im.reshape(784, 1), weights, bias)
         prediction.append(np.argmax(y))
     return prediction
-
 
 def calculate_error(predicted, true):
     """Calculates error between predicted and true."""
