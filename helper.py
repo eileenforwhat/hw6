@@ -11,19 +11,8 @@ def sigmoid(x, w, b):
     return ret
 
 
-def tanh(x, w, b):
-    print x.shape
-    print w.shape
-    print b.shape
-    #z = np.dot(w, x) + b
-    z = np.dot(w,x)
-    return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
-
-
 def generate_batches(images, labels):
     """Randomly shuffles data and divides into batches of 200."""
-    print images.shape
-    print labels.shape
     appended = np.append(images, labels, axis=1)
     np.random.shuffle(appended)
     batches = []

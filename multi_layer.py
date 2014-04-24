@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-def run_epoches(train_images, train_labels, test_images, test_labels, n=300, alpha=0.6):
+def run_epoches(train_images, train_labels, test_images, test_labels, n=100, alpha=0.6):
     """
     Run n number of epoches.
     train_images : training images
@@ -53,8 +53,8 @@ def run_epoches(train_images, train_labels, test_images, test_labels, n=300, alp
             x_cee = forward(feats, cee_weights, cee_bias)
 
             # [d_1, d_2, d_3]
-            d_mse = backward_mse(x_mse, labels, mse_weights, mse_bias)
-            d_cee = backward_cee(x_cee, labels, cee_weights, cee_bias)
+            d_mse = backward_mse(x_mse, labels, mse_weights)
+            d_cee = backward_cee(x_cee, labels, cee_weights)
 
             mse_weights = update_w(x_mse, mse_weights, d_mse, eta)
             cee_weights = update_w(x_cee, cee_weights, d_cee, eta)
@@ -78,8 +78,8 @@ def run_epoches(train_images, train_labels, test_images, test_labels, n=300, alp
             print 'epoch=', i
             print 'error rate on training set using mean squared error', 1 - res1
             print 'error rate on training set using cross-entropy error', 1- res2
-            print 'error rate on test set using mean squared error', 1-res3
-            print 'error rate on test set using cross-entropy error', 1-res4
+            print 'error rate on test set using mean squared error', 1 - res3
+            print 'error rate on test set using cross-entropy error', 1 - res4
 
     p1, = plt.plot(x_axis, training_mse, 'r')
     p2, = plt.plot(x_axis, training_cee, 'b')
@@ -116,7 +116,7 @@ def forward(x_0, weights, bias):
     return [x_0, x_1, x_2, x_3]
 
 
-def backward_mse(x, labels, weights, bias):
+def backward_mse(x, labels, weights):
     x_0, x_1, x_2, x_3 = x
     t = np.zeros((200, 10))
     for row in range(len(t[:,0])):
@@ -129,7 +129,7 @@ def backward_mse(x, labels, weights, bias):
     return [d_1, d_2, d_3]
 
 
-def backward_cee(x, labels, weights, bias):
+def backward_cee(x, labels, weights):
     x_0, x_1, x_2, x_3 = x
     t = np.zeros((200, 10))
     for row in range(len(t[:,0])):
@@ -159,11 +159,8 @@ def update_b(x, biases, deltas, eta):
 
 def predict(features, weights, biases):
     mse_pred = forward(features, weights, biases) # propagate
-    mse_pred = np.argmax(mse_pred[3],axis=1) # classify
+    mse_pred = np.argmax(mse_pred[3], axis=1) # classify
     return mse_pred.reshape(mse_pred.shape[0], 1)
 
 def calculate_accuracy(pred, true_label):
     return 1.0 * np.sum(pred==true_label) / true_label.shape[0]
-
-def calculate_error(pred, true_label):
-    return 1.0 * np.sum(pred!=true_label) / true_label.shape[0]

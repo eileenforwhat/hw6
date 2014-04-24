@@ -27,11 +27,11 @@ if __name__ == '__main__':
 
     test_images = preprocessing.scale(test_images.astype(float), axis=1)
 
-    start = time.clock()
-    sl.run_epoches(train_images, train_labels, test_images, test_labels)
-    end = time.clock()
-    elapsed = (end - start) / 3600
-    print 'elapsed time (hours) for single layered network=', elapsed
+    # start = time.clock()
+    # sl.run_epoches(train_images, train_labels, test_images, test_labels)
+    # end = time.clock()
+    # elapsed = (end - start) / 3600
+    # print 'elapsed time (hours) for single layered network=', elapsed
 
     start = time.clock()
     ml.run_epoches(train_images, train_labels, test_images, test_labels)
