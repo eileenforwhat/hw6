@@ -16,7 +16,7 @@ def run_epoches(train_images, train_labels, test_images, test_labels, n=100, alp
     """
 
     # initialize weights and bias values to random
-    scale_factor = 10e-3 # scaling factor for weight and bias
+    scale_factor = 10e-4 # scaling factor for weight and bias
     # weights and bias for Mean Squared Error
     mse_weights = [np.random.randn(784, 300) * scale_factor, \
             np.random.randn(300, 100) * scale_factor, \
@@ -41,6 +41,7 @@ def run_epoches(train_images, train_labels, test_images, test_labels, n=100, alp
     x_axis = []
 
     for i in range(n):
+        print i,'-th epoch'
         eta = alpha / math.pow(i + 1, 0.5)
         batches = helper.generate_batches(train_images, train_labels)
         for batch in batches:       
@@ -100,19 +101,36 @@ def forward(x_0, weights, bias):
      then calculate the last layer x_3 with sigmoid function
     """
     # sigmoid function
-    def sigmoid(s):
-        return 1.0 / (1 + np.exp(-s))
-    # sigmoid function to accept numpy array
-    sigmoid = np.vectorize(sigmoid, otypes=[np.float])
+    def get_sigmoid(s):
+        ret = 1.0 / (1 + np.exp(-s))
+        offset = 10e-5
+        if ret == 0:
+            ret += offset # 0.0001
+        elif ret == 1:
+            ret -= offset # 0.9999
+        return ret
+    def get_tanh(s):
+        ret = np.tanh(s)
+        offset = 10e-5
+        if ret==-1:
+            ret+=offset
+        elif ret==0:
+            ret+=offset
+        elif ret==1:
+            ret-=offset
+        return ret
+    # sigmoid and tanh to accept numpy array
+    get_sigmoid = np.vectorize(get_sigmoid, otypes=[np.float])
+    get_tanh = np.vectorize(get_tanh, otypes=[np.float])
 
     s_1 = np.dot(x_0, weights[0]) + bias[0].T # 200-by-300 matrix
-    x_1 = np.tanh(s_1)
+    x_1 = get_tanh(s_1)
 
     s_2 = np.dot(x_1, weights[1]) + bias[1].T # 200-by-100 matrix
-    x_2 = np.tanh(s_2)
+    x_2 = get_tanh(s_2)
 
     s_3 = np.dot(x_2, weights[2]) + bias[2].T # 200-by-10 matrix
-    x_3 = sigmoid(s_3)
+    x_3 = get_sigmoid(s_3)
     return [x_0, x_1, x_2, x_3]
 
 
@@ -123,9 +141,9 @@ def backward_mse(x, labels, weights):
         r = np.zeros((1, 10))
         r[:,int(labels[row])] = 1
         t[row,:] = r
-    d_3 = np.multiply(np.multiply(x_3 - t, 1 - x_3), x_3)
-    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2))
-    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
+    d_3 = np.multiply(np.multiply(x_3 - t, 1 - x_3), x_3) # 200-by-10
+    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2)) # 200-by-100
+    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1)) # 200-by-300
     return [d_1, d_2, d_3]
 
 
@@ -136,9 +154,9 @@ def backward_cee(x, labels, weights):
         r = np.zeros((1, 10))
         r[:,int(labels[row])] = 1
         t[row,:] = r
-    d_3 = x_3 - t
-    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2))
-    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1))
+    d_3 = x_3 - t # 200-by-10
+    d_2 = np.multiply(np.dot(d_3, weights[2].T), 1 - np.multiply(x_2, x_2)) # 200-by-100
+    d_1 = np.multiply(np.dot(d_2, weights[1].T), 1 - np.multiply(x_1, x_1)) # 200-by-300
     return [d_1, d_2, d_3]
 
 
